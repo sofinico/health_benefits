@@ -11,4 +11,4 @@ class DataBase:
         self.path = path
         self.file_name = file_name
         self.df = pd.read_csv(self.path + self.file_name)
-        print('Load database ' + file_name + '\n')
+        print('\nLoad database ' + file_name + '\n')
