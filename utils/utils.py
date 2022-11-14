@@ -6,7 +6,7 @@ def blankspace(n=1):
         print('\n')
 
 
-def check(statement, message=''):
+def check(statement: bool, message=''):
     error_message = 'Check not accomplished.' if message == '' else message
 
     if not statement:
