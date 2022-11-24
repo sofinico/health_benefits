@@ -35,6 +35,10 @@ def build_matrix(p, e):
 
 
 def occ_to_prob(matrix):
+    '''
+    Pasa una BRM de frecuencias a una con probabilidad normalizada por efector (cada fila suma 1).
+    '''
+
     nrows = matrix.shape[0]
 
     for i in range(nrows):
@@ -84,7 +88,7 @@ def remove_rare_benefits(matrix, tresh, percentage_tresh=True, strict=True):
         raise ValueError('Percentage treshold value must be between 0 and 100')
 
     total_occ = matrix.sum().sum()  # total of benefit occurences
-    new_matrix = matrix
+    new_matrix = matrix.copy()
     removed_benefits = pd.DataFrame(index=matrix.index)
 
     for index, value in matrix.sum().items():
@@ -93,7 +97,10 @@ def remove_rare_benefits(matrix, tresh, percentage_tresh=True, strict=True):
 
         if value < tresh or (not strict and value == tresh):
             new_matrix = new_matrix.drop([index], axis=1)
-            removed_benefits[index] = matrix[index]
+            removed_benefits = pd.concat(
+                (removed_benefits, matrix[index]), axis=1)
+
+    check(new_matrix.shape[1] + removed_benefits.shape[1] == matrix.shape[1])
 
     return new_matrix, removed_benefits
 
@@ -156,7 +163,7 @@ def intersect_tables(table1, table2):
 # plot
 
 
-def plot_benefit_type_probability(freq_table, fig_number, freq=False, show=True, fig_size=(10, 5)):
+def plot_benefit_type_probability(freq_table, fig_number, thresh_rare_benefits, thresh_low_records, fig_size=(10, 5), freq=False, show=True):
     '''
     Graphs benefit representation matrix showing probability of each benefit type normalized by effector.
 
@@ -211,14 +218,17 @@ def plot_benefit_type_probability(freq_table, fig_number, freq=False, show=True,
 
     ax.legend()
 
+    ax.set_title(
+        f'rare_ben: {thresh_rare_benefits} - low_rec: {thresh_low_records}', loc='right')
+
     if freq:
         ax.set_ylabel('Frecuencia')
         ax.set_title(
-            f'FIG {fig_number}. Frecuencia tipo prestación según efector')
+            f'FIG {fig_number}. Frecuencia tipo prestación según efector', loc='left')
     else:
         ax.set_ylabel('Probabilidad por efector')
         ax.set_title(
-            f'FIG {fig_number}. Probabilidad tipo prestación según efector')
+            f'FIG {fig_number}. Probabilidad tipo prestación según efector', loc='left')
 
     fig.tight_layout()
 
@@ -228,11 +238,10 @@ def plot_benefit_type_probability(freq_table, fig_number, freq=False, show=True,
     return fig
 
 
-def plot_benefit_profile(freq_table, fig_number, freq=False, show=True, fig_size=(10, 5), fig=None):
+def plot_benefit_profile(freq_table, fig_number, thresh_rare_benefits, thresh_low_records, fig_size=(10, 5), freq=False, show=True, fig=None):
     '''
-    Es esencialmente el mismo gráfico que benefit_type_probability() pero haciendo switch de labels. 
-    L probabilidad sigue normalizada por efector. Aquí las barras de una misma categoría de efector suman 1, no las de mismo color.
-    Sirve para visualizar mejor los perfiles de prestaciones asociadas a cada categoría.
+    La diferencia de este gráfico con respecto a benefit_type_probability() es que acá la probabilidad
+    de un tipo de prestación es por efector (las barras de cada categoría de efector suman 1).
     '''
 
     if not fig == None:
@@ -287,7 +296,10 @@ def plot_benefit_profile(freq_table, fig_number, freq=False, show=True, fig_size
     ax.legend()
 
     ax.set_title(
-        f'FIG {fig_number}. Perfil de prestaciones por categoría efector')
+        f'rare_ben: {thresh_rare_benefits} - low_rec: {thresh_low_records}', loc='right')
+
+    ax.set_title(
+        f'FIG {fig_number}. Perfil de prestaciones por categoría efector', loc='left')
 
     if freq:
         ax.set_ylabel('Frecuencia')
