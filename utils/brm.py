@@ -7,12 +7,16 @@ from utils.utils import *
 # benefit representation matrix
 
 
-def build_matrix(p, e):
+def build_matrix(p, e, non_consec_index=False):
     '''
     Parameters
     ----------
     p, e: Series 
         Vectores columna con todos los registros, así como vienen de la base de prestaciones.
+    non_consec_index: bool
+        Esto sucede cuando las tiras p y e provienen del un DataFrame filtado, entonces lo índices no son necesariamente consecutivos.
+        En ese caso, debemos construir la matriz de una manera más general, aunque sensiblemente más lenta. 
+        Por eso creamos esta forma de construcción opcional y no la usamos por default.
 
     Returns
     ----------
@@ -26,8 +30,13 @@ def build_matrix(p, e):
     matrix = pd.DataFrame(columns=list(p.unique()),
                           index=list(e.unique())).fillna(0)
 
-    for i, value in p.items():
-        matrix.loc[e.iloc[i], value] += 1
+    if non_consec_index:
+        for index, value in p.items():
+            matrix.loc[e.loc[e.index == index], value] += 1
+    else:
+        # índice coincide con número de fila (iloc busca por número de fila)
+        for index, value in p.items():
+            matrix.loc[e.iloc[index], value] += 1
 
     check(p.size == matrix.sum().sum())
 
@@ -44,7 +53,7 @@ def occ_to_prob(matrix):
     for i in range(nrows):
         matrix.iloc[i] = matrix.iloc[i] / matrix.iloc[i].sum()
 
-    check(nrows == matrix.sum().sum())
+    check(nrows == np.round(matrix.sum().sum(), 8))
 
     return matrix
 
