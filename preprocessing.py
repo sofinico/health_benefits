@@ -98,7 +98,37 @@ for e in df_p['efector'].unique():
 check(len(df_p.loc[df_p.rural_urbano == 'Sin datos']
       ['efector'].unique()) == table_match_effectors.loc[table_match_effectors.has_cathegory == False].shape[0])
 
-print("\nAgregamos columnas: 'rural_urbano' y 'tipo_efe', si no tienen categoría ponemos 'Sin datos'")
+print("\nAgregamos columnas a la base de prestaciones: 'rural_urbano' y 'tipo_efe', si no tienen categoría ponemos 'Sin datos'")
+
+# primero agrego la columna "categoria_efe" a df_p (se usa en 1v2 y acá, estaría bueno pasarlo a preproc)
+
+df_p['categoria_efe'] = None
+
+for index, row in df_p.loc[:].iterrows():
+    tipo_efe = row['tipo_efe'].strip()
+    rural_urbano = row['rural_urbano'].strip()
+
+    if (('Hospital' in tipo_efe) or ('Admin' in tipo_efe)):
+        df_p.loc[index, 'categoria_efe'] = tipo_efe
+
+    elif 'Centro' in tipo_efe:
+        if 'Rural' == rural_urbano:
+            df_p.loc[index, 'categoria_efe'] = 'Centro de salud Rural'
+
+        elif 'Urbano' == rural_urbano:
+            df_p.loc[index, 'categoria_efe'] = 'Centro de salud Urbano'
+
+    elif 'Posta' in tipo_efe:
+        if 'Rural' == rural_urbano:
+            df_p.loc[index, 'categoria_efe'] = 'Posta Rural'
+
+        elif 'Urbano' == rural_urbano:
+            df_p.loc[index, 'categoria_efe'] = 'Posta Urbano'
+
+    else:
+        df_p.loc[index, 'categoria_efe'] = 'Sin datos'
+
+print("\nAgregamos también la columna: 'categoria_efe' que distinge entre 'Posta Urbana/Rural', 'Centro de salud Urbano/Rural', 'Hospital' y     'Administración'")
 
 # ------------------------------------------------------------------
 
