@@ -1,7 +1,3 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
 import load
 from utils.utils import *
 from utils.prestaciones import *
@@ -274,4 +270,4 @@ print('\nGuardamos las bases en ./data/')
 
 df_p.to_pickle("./data/base_prestaciones/misiones_2019_completa.pkl")
 df_e.to_pickle("./data/categorias_efectores/2021.pkl")
-df_e.to_pickle("./data/categorias_prestaciones/2022.pkl")
+df_c.to_pickle("./data/categorias_prestaciones/2022.pkl")
