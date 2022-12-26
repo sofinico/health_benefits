@@ -102,10 +102,18 @@ df_pca_z = pd.read_pickle("./data/pca/misiones_2019/z_score.pkl")
 
 # ZSCORE
 
-fig = plt.figure(figsize=(7.5, 5))
-fig.suptitle('PCA Z Score', fontsize=18)
-ax1 = fig.add_subplot(1, 1, 1)
-plot_pca(ax1, df_p, df_pca_z, 'PC1', 'PC2')
-plt.show()
+# fig = plt.figure(figsize=(7.5, 5))
+# fig.suptitle('PCA Z Score', fontsize=18)
+# ax1 = fig.add_subplot(1, 1, 1)
+# plot_pca(ax1, df_p, df_pca_z, 'PC1', 'PC2')
+# plt.show()
 # plt.savefig('images/pca/zscore_pc1_pc2.png')
+# plt.close()
+
+# fig = plt.figure(figsize=(7.5, 5))
+# fig.suptitle('PCA Z Score', fontsize=18)
+# ax1 = fig.add_subplot(1, 1, 1)
+# plot_pca(ax1, df_p, df_pca_z, 'PC2', 'PC3')
+# plt.show()
+# plt.savefig('images/pca/zscore_pc1_pc3.png')
 # plt.close()
