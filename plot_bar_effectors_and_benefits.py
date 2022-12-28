@@ -17,12 +17,19 @@ color_cath = dict({'Posta Rural': 'mediumturquoise',
                    'Hospital': 'gold',
                    'Administración': 'gray'})
 
-custom_sort = dict({'Posta Rural': 0,
-                   'Posta Urbano': 2,
-                    'Centro de salud Rural': 1,
-                    'Centro de salud Urbano': 3,
-                    'Hospital': 4,
-                    'Administración': 5})
+color_ben_type = dict({'Consulta': 'mediumseagreen',
+                       'Práctica': 'gold',
+                       'Imagenología': 'darkorange',
+                       'Inmunizaciones': 'darkorchid',
+                       'Taller': 'darkgreen',
+                       'Laboratorio': 'violet'})
+
+custom_sort_eff = dict({'Posta Rural': 0,
+                        'Posta Urbano': 2,
+                        'Centro de salud Rural': 1,
+                        'Centro de salud Urbano': 3,
+                        'Hospital': 4,
+                        'Administración': 5})
 
 
 def plot_benefit_type_probability_v2(freq_table, fig_size=(10, 5), fontsize=10):
@@ -88,7 +95,7 @@ def plot_benefit_type_probability_v2(freq_table, fig_size=(10, 5), fontsize=10):
     return fig
 
 
-def plot_benefit_profile_v2(freq_table, fig_number, thresh_rare_benefits, thresh_low_records, fig_size=(10, 5), freq=False):
+def plot_benefit_profile_v2(freq_table, fig_size=(10, 5), fontsize=10):
     '''
     La diferencia de este gráfico con respecto a benefit_type_probability() es que acá la probabilidad
     de un tipo de prestación es por efector (las barras de cada categoría de efector suman 1).
@@ -116,43 +123,30 @@ def plot_benefit_profile_v2(freq_table, fig_number, thresh_rare_benefits, thresh
 
     # probability (normalized per effector cathegory: bars in each "group" sum 1)
 
-    if not freq:
-        prob_table = freq_table.copy()
+    prob_table = freq_table.copy()
 
-        for eff in list(prob_table.index):
-            prob_table.loc[eff] = prob_table.loc[eff] / n_total[eff].item()
+    for eff in list(prob_table.index):
+        prob_table.loc[eff] = prob_table.loc[eff] / n_total[eff].item()
 
     for benefit_type in list(freq_table.columns):
-        if not freq:
-            v = list(prob_table[benefit_type])
-        else:
-            v = list(freq_table[benefit_type])
+
+        v = list(prob_table[benefit_type])
 
         values[benefit_type] = v
 
-        ax.bar(x, values[benefit_type], width, label=benefit_type)
+        ax.bar(x, values[benefit_type], width,
+               label=benefit_type, color=color_ben_type[benefit_type])
         x = x + width
-
-    ax.set_xlabel('Categoria efector')
 
     factor = (len(list(freq_table.columns)) - 1) / 2
 
     ax.set_xticks(y + factor*width, labels, rotation=10)
+    ax.set_xlabel('Categoria efector', size=fontsize)
+    ax.set_ylabel('Probabilidad por efector', size=fontsize)
 
     # ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-    ax.legend()
-
-    ax.set_title(
-        f'rare_ben: {thresh_rare_benefits} - low_rec: {thresh_low_records}', loc='right')
-
-    ax.set_title(
-        f'FIG {fig_number}. Perfil de prestaciones por categoría efector', loc='left')
-
-    if freq:
-        ax.set_ylabel('Frecuencia')
-
-    else:
-        ax.set_ylabel('Probabilidad por efector')
+    ax.legend(fontsize=fontsize-2)
+    ax.tick_params(labelsize=fontsize-2)
 
     fig.tight_layout()
 
@@ -184,7 +178,16 @@ bnr_int = intersect_tables(bnr_no_low, bnr_no_rare)
 bnr_int = bnr_int.drop(['Sin datos'], axis=0)
 
 # ordenamos las categorías de efector para mejor visualización en el gráfico
-bnr_int = bnr_int.sort_index(axis=0, key=lambda x: x.map(custom_sort))
+bnr_int = bnr_int.sort_index(axis=0, key=lambda x: x.map(custom_sort_eff))
+
+# ordenamos tipos de prestación por cantidad de registros (de mayor a menor)
+custom_sort_ben_type = dict.fromkeys(list(bnr_int.columns))
+
+for t in list(bnr_int.columns):
+    custom_sort_ben_type[t] = bnr_int.sum()[t]
+
+bnr_int = bnr_int.sort_index(axis=1, key=lambda x: x.map(
+    custom_sort_ben_type), ascending=False)
 
 # fig config
 b = 16
@@ -194,28 +197,17 @@ fontsize = 11
 
 # FIGURA 20
 
-fig2 = plot_benefit_type_probability_v2(
-    bnr_int, fig_size=(b*cm, h*cm), fontsize=fontsize)
+# fig2 = plot_benefit_type_probability_v2(
+#     bnr_int, fig_size=(b*cm, h*cm), fontsize=fontsize)
 
-fig2.savefig(
-    f'images/effectors/benefit_type_probability_trare_{thresh_rare_benefits}_tlowrec_{thresh_low_records}_({b}, {np.round(h, 2)}).png', dpi=1200)
+# fig2.savefig(
+#     f'images/effectors/benefit_type_probability_trare_{thresh_rare_benefits}_tlowrec_{thresh_low_records}_({b}, {np.round(h, 2)}).png', dpi=1200)
 
-plt.close()
 
 # FIGURA 30
 
-# b = 14
-# h = 14 * (2/3)
-# cm = 1/2.54
+fig3 = plot_benefit_profile_v2(
+    bnr_int, fig_size=(b*cm, h*cm), fontsize=fontsize)
 
-# fig3 = plot_benefit_profile_v2(bnr_int,
-#                                31,
-#                                thresh_rare_benefits,
-#                                thresh_low_records,
-#                                fig_size=(10, 5.5))
-
-# # fig.savefig('images/effectors/effectors_cath_bar.png')
-# # fig.savefig(
-# #     f'images/effectors/effectors_cath_bar_({b}, {np.round(h, 2)}).png', dpi=1200)
-
-# plt.close()
+# fig3.savefig(
+#     f'images/effectors/effectors_cath_bar_trare_{thresh_rare_benefits}_tlowrec_{thresh_low_records}_({b}, {np.round(h, 2)}).png', dpi=1200)
