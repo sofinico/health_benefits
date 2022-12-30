@@ -62,6 +62,25 @@ print('Variance ratio:', [np.round(n * 100, 2)
 print('Variance ratio PC1 + PC2:', np.round(
     pca.explained_variance_ratio_[:2].sum() * 100, 2), '%')
 
+df_pca_prob['rural_urbano'] = ''
+df_pca_prob['cluster_custom'] = ''
+df_pca_prob['categoria_efe'] = ''
+
+for index, row in df_pca_prob.iterrows():
+    rural_urbano = df_p.loc[df_p.efector ==
+                            row.efector, 'rural_urbano'].iloc[0]
+    cluster_custom = 2 if (row.PC1 < -0.32) else 1
+    categoria = df_p.loc[df_p.efector == row.efector, 'categoria_efe'].iloc[0]
+
+    df_pca_prob.loc[df_pca_prob.efector ==
+                    row.efector, 'rural_urbano'] = rural_urbano
+    df_pca_prob.loc[df_pca_prob.efector ==
+                    row.efector, 'cluster_custom'] = cluster_custom
+    df_pca_prob.loc[df_pca_prob.efector ==
+                    row.efector, 'categoria_efe'] = categoria
+
+df_pca_prob
+
 df_pca_prob.to_pickle("./data/pca/misiones_2019/probability.pkl")
 
 # ------------------------------------------------------------------
