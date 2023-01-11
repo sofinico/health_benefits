@@ -5,8 +5,6 @@ db_paths = '/Users/sofinico/tesis/db/'
 
 class DataBase:
 
-    # initialiation
-
     def __init__(self, file_name, path=db_paths):
         self.path = path
         self.file_name = file_name

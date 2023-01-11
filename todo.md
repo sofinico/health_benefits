@@ -1,37 +1,63 @@
-#### dudas
+## Objetivos generales
 
-- [x] interpretación de la ubicación de los puntos en el PCA en relación a los pesos de los ejes. ¿Qué pasa cuando una misma prestación aparece en dos componentes con peso de signo opuesto?
-- [x] criterio de remoción "bueno", para las figuras del notebook 1 (inequidad rural-urbano) => remover no por porcentaje si no por frecuencia, con una justificación de fluctuaciones estadísticas (2% pueden ser 30k). Elaborar más esta justificación y pensar cuando sí tiene sentido remover por porcentaje (prestaciones "raras").
-- [x] decisiones en mapeo lineas de cuidado => OK (con cierto thresh frecuencia). Estaría bueno comparar después con la decisión más conservadora de sacar los datos que no podemos mapear y hacer los mismos gráficos. Lo que estamos haciendo propiamente se llama _imputación_ de datos: sustitución de valores no informados en una observación por otros.
-- [x] sub o sobre representacion: con threshold de frecuencias => OK (suma de ambos con un límite)
+I. Caracterizar los efectores de salud (hospitales, centros médicos, etc.) de la provincia de Misiones según el perfil de servicios prestados a individuos menores de 5 años.
 
-#### to-do
+II. Caracterizar las prestaciones efectuadas a la población infantil vulnerable de la provincia de Misiones (menores de 5 años) y su asociación con variables sociodemográficas y con la desnutrición.
 
-- [x] mapeo líneas de cuidado<sup>1</sup>
-- [x] completar base prestaciones con la metadata de la base de cateogorías prestaciones (valores imputados)
-- [x] presentación de resultados más útil: colocar conclusiones y corresponderlos con los objetivos para diciembre
-- [ ] ~gráficos probabilidad línea de cuidado por categoría y perfil líneas de cuidado (tipo notebook 1) (1)~ <sup>2</sup>
-- [x] benefit representation matrix con prestaciones full dim (2)
-  - [x] postas
-  - [x] centro de salud
-  - [x] todos rurales vs todos urbanos
-  - [x] todos rurales vs todos urbanos (sólo consultas o sólo inmunizaciones)
-- [x] PCA (3)
-- [ ] PCA: elipses rural-urbano
-- [ ] clústering prestaciones (4)
-  - [ ] jerárquico
-  - [ ] distancia euclídea
+## Objetivos específicos
 
-<sup>1</sup> No es trivial. Ver notebook 2. La raíz del problema es que la intersección de prestaciones (código completo) entre las bases es del 30%. Se elaboró el método de imputación de máximas ocurrencias.
-<sup>2</sup> Se cierra esto por el momento, ver notebook 1 v2. La distribución de ocurrencias de línea de cuidado (o cualquier otro agrupamiento) en la base no permite extraer información significativa. Ver `benefit_occ` table.
+_Etapa 1: Prestaciones a niñes general_
 
-#### backlog
+a. Estudiar diferencias de perfiles de prestaciones para diferentes efectores de la salud de Misiones (hospitales, centros médicos, etc.).
 
-- [ ] pasar a db el documento 04_Ninos_1608.pdf
-- [ ] referencia única para categorizar e identificar prestaciones
+b. Cuantificar la inequidad en acceso a la salud en zonas urbanas contra zonas rurales.
 
-#### ideas
+c. Disminuir la dimensionalidad del espacio de prestaciones, en la matriz efectores-prestaciones.
 
-- [ ] sub o sobre representación de prestaciones por zonas geográficas
+d. Estudiar la relación entre las características sociodemográficas de los efectores y el perfil de prestaciones que ofrecen.
+
+_Etapa 2: Prestaciones a niñes con desnutrición_
+
+e. Estudiar diferencias de perfiles de prestaciones para diferentes efectores de la salud de Misiones para el subset de niñes con desnutrición.
+
+f. Determinar la proporción de individuos con desnutrición con cobertura de prestaciones asociadas a desnutrición (acatamiento al protocolo o inconstancia de carga al sistema por parte de los efectores).
+
+## Dudas
+
+- [ ] Probabilidades de BRM si removemos según un cierto thresh de freq: ¿se cuentan las removidas para el N total?
+
+## To-do
+
+**Base**
+
+- [ ] Buscar efectores sin datos en internet (completar la base `categorias_efectores`)
+- [ ] Pasar a db el documento 04_Ninos_1608.pdf
+- [ ] Referencia única para categorizar e identificar prestaciones
+
+**Otras**
+
+- [ ] Documento con lista de análisis ya realizados, para referencia y visualización
+
+**a.**
+
+- [ ] Gráficos barras: cambian en algo con la "nueva" base?
+- [ ] PCA con nombre de prestación en lugar de código
+- [ ] Laburar la matriz del PCA (remover ciertas prestaciones, etc)
+
+**b.**
+
+- [ ] Sortear por N en la `ratio_table`
+- [ ] CEB para la `ratio_table`
+- [ ] `ratio_table` con nombre de prestación en lugar de código
+
+**c.**
+
+- [ ] Clústering jerárquico
+- [ ] Clústering distancia euclídea
+
+## Backlog
+
+## Ideas
+
+- [ ] Sub o sobre representación de prestaciones por zonas geográficas
 - [ ] PCA: tamaño marker según cantidad de registros del efector
-- [ ] PCA: por diagnóstico en lugar de prestación
